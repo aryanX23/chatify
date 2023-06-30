@@ -2,15 +2,17 @@
 
 # dependencies
 /node_modules
-/.pnp
+/views/node_modules
+/views/.pnp
+/views/.pnp.js
 .pnp.js
-
+.pnp
 # testing
+/views/coverage
 /coverage
-
 # production
+/views/build
 /build
-
 # misc
 .DS_Store
 .env.local
