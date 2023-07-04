@@ -8,7 +8,7 @@ async function registerUsers(req, res, next){
     try {
         const alreadyExists = await Users.findOne({ email });
         if (alreadyExists) {
-            res.status(400).send("User Already Exists!");
+            res.status(400).send({ response: "User Already Exists!" });
         }
         else {
             const newUser = new Users({ fullName, email });
@@ -17,11 +17,12 @@ async function registerUsers(req, res, next){
                 newUser.save();
                 next();
             });
-            res.status(200).send("User Registered Successfully!");
+            res.status(200).send("User Registration Successful!");
         }
     }  
     catch (e) {
         console.log("Error has occured in register route!", e);
+        res.status(400).send("Internal Error has Occured!");
     }
 }
 
@@ -30,12 +31,12 @@ async function loginUsers(req,res){
     try {
         const user = await Users.findOne({ email });
         if (!user) {
-            res.status(400).send("Incorrect Details");
+            res.status(400).send({response:"Incorrect Email!"});
         }
         else {
             const isValid = await bcrypt.compare(password, user.password);
             if (!isValid) {
-                res.status(400).send("Incorrect email or password!");
+                res.status(400).send({ response: "Incorrect password!" });
             }
             else {
                 const payload = {
@@ -43,23 +44,73 @@ async function loginUsers(req,res){
                     email: user.email
                 }
                 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || "hello this is a test:)";
-                const token = jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: 10000 });
+                const token = jwt.sign(payload, JWT_SECRET_KEY);
                 await Users.updateOne({ _id: user._id }, {
                         $set: { token }
-                    });
+                });
                 await user.save();
-                
-                res.status(200).json({user: user, accessToken:token});
-                
+                res.status(200).cookie([`JWT_TOKEN=${token}; secure; httponly;samesite=none;`,])
+                    .json({ response: "User Logged In Successfully!", user: user, authenticated: true });
             }
         }
     }
     catch (e) {
         console.log("An Error has occured in the login route!", e);
+        res.status(400).send({ response: "Internal Error!" });
+    }
+}
+async function checkLoggedIn(req, res) {
+    try {
+        const token = req.cookies.JWT_TOKEN;
+        const { userId } = req.body;
+        const user = await Users.findOne({ _id: userId });
+        if (typeof(token) !== "undefined" && user !== null) {
+            if (user.token === token) {
+                res.status(200).send({ authenticated: true });
+                return;
+            }
+            else {
+                res.status(200).send({ authenticated: false });
+                return;
+            }
+        }
+        else if (user === null) {
+            res.status(200).send({ authenticated: false });
+            return;
+        }
+        else {
+            await Users.updateOne({ _id: userId }, {
+                        $unset: { token:user.token }
+            });
+            res.status(200).send({ authenticated: false });
+            return;
+        }
+    }
+    catch (e) {
+        console.log("Error Occured in checkLoggedIn Route!", e);
+        res.status(200).send({ authenticated: false });
+            return;
+    }
+}
+
+async function logOut(req, res) {
+    try {
+        const { userId } = req.body;
+        const user = await Users.findOne({ _id: userId });
+        await Users.updateOne({ _id: userId }, {
+            $unset: { token:user.token }
+        });
+        res.status(200).clearCookie("JWT_TOKEN").send({ authenticated: false });
+    }
+    catch (e) {
+        console.log("An Error has Occurred in the logOut route");
+        res.status(200).clearCookie("JWT_TOKEN").send({ authenticated: false });
     }
 }
 
 module.exports = {
     registerUsers,
     loginUsers,
+    checkLoggedIn,
+    logOut
 }
