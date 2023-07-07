@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './dashboard.css';
 import { Axios, URL } from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
+import Leftpane from './leftpane/leftpane';
+import Rightpane from './rightpane/rightpane';
+import Middlepane from './middlepane/middlepane';
 export default function Dashboard() {
     const [userDetails, setUserDetails] = useState({
         userId: localStorage.getItem("userId"),
@@ -60,15 +63,9 @@ export default function Dashboard() {
     }
     return (
         <div className='dashboardBody'>
-            <div className='leftpane'>
-                
-            </div>
-            <div className='middlepane'>
-
-            </div>
-            <div className='rightpane'>
-
-            </div>
+            <Leftpane/>
+            <Middlepane/>
+            <Rightpane/>
         </div>
     );
 }

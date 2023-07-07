@@ -1,0 +1,6 @@
+.rightpane {
+    height: 100%;
+    width: 25%;
+    background-color: white;
+    border-left: 1px #edeced solid;
+}

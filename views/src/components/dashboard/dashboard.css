@@ -15,18 +15,3 @@
     display: none;
     overflow: scroll;
 }
-.leftpane{
-    height: 100%;
-    width: 25%;
-    border: 2px solid red;
-}
-.middlepane {
-    height: 100%;
-    width: 50%;
-    border: 2px solid green;
-}
-.rightpane {
-    height: 100%;
-    width: 25%;
-    border: 2px solid blue;
-}
