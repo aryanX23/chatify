@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
     res.send("Server Online!!"); 
 });
 
-connectMongoDB('mongodb://localhost:27017/').then(result=>{
+connectMongoDB('mongodb://0.0.0.0:27017').then(result=>{
     app.listen(port,()=>{
         console.log("Server is successfully running on port "+port+" !!");
     });
