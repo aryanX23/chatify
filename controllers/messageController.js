@@ -4,7 +4,7 @@ async function getMessage(req, res) {
     try {
         const conversationId = req.params.id;
         const messages = await Messages.findOne({ conversationId });
-        res.send(messages.data);
+        res.send(messages);
     }
     catch (e) {
         console.log("An Error has occured in the getmessages route!", e);
