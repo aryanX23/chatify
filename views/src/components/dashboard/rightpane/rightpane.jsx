@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import './rightpane.css';
 import { IonIcon } from '@ionic/react';
 import { closeSharp } from 'ionicons/icons';

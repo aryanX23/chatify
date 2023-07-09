@@ -1,13 +1,35 @@
-import React, { useState,useRef } from 'react';
+import React, { useState,useRef,useEffect } from 'react';
 import EmojiPicker from 'emoji-picker-react';
 import { IonIcon } from '@ionic/react';
 import { happyOutline, sendSharp, settingsOutline } from 'ionicons/icons'
 import './middlepane.css';
+import { Axios, URL } from '../../../api/axios';
 
 export default function Middlepane() {
     const [chatText, setChatText] = useState("");
     const [showEmojis, setShowEmojis] = useState(false);
+    const [messages, setMessages] = useState([]);
     const ref = useRef(null);
+    const messagesEndRef = useRef(null);
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        const conId = localStorage.getItem("conversationId");
+        if (conId !== null || conId !== "") {
+            Axios.get(URL + "/api/message/get/" + conId).then(
+                (response) => {
+                    const data = response.data.data;
+                    setMessages((prev) => data);
+                }
+            ).catch((err)=>{console.log(err)});
+        }
+    }, []);
+    //console.log(messages);
+    useEffect(() => {
+        scrollToBottom();
+    }, [chatText,messages]);
     function handleShow() {
         setShowEmojis(!showEmojis);
     }
@@ -28,10 +50,54 @@ export default function Middlepane() {
         );
     }
     function handleSend(e) {
-        console.log(chatText);
-        setChatText(prev => "");
-        setShowEmojis(prev => false);
+        if (chatText !== "") {
+            const conversationId = localStorage.getItem("conversationId");
+            if (conversationId === null) {
+                setChatText((prev) => "");
+                setShowEmojis((prev) => false);
+                return;
+            }
+            const bodyFormData = {
+                conversationId: conversationId,
+                senderId: localStorage.getItem("userId"),
+                message: chatText
+            };
+            Axios({
+                method: "post",
+                url: URL + "/api/message/set",
+                withCredentials: true,
+                data: bodyFormData,
+            }).then(response=>console.log(response));
+            setChatText(prev => "");
+            setShowEmojis(prev => false);
+        }
     }
+    const divs = messages?.map(
+        ({ message , senderId }) => {
+            if(senderId === localStorage.getItem("userId"))
+                return (
+                    <div className="receiverMessage">
+                        <div className="innerText">
+                            {message}
+                        </div>
+                        <img
+                            src={process.env.PUBLIC_URL + "/images/avatar.jpg"}
+                            alt="avatar"
+                        />
+                    </div>
+                );
+            else
+               return (
+                   <div className="senderMessage">
+                       <img
+                           src={process.env.PUBLIC_URL + "/images/demoImg.jpeg"}
+                           alt="avatar"
+                       />
+                       <div className="innerText">{message}</div>
+                   </div>
+               ); 
+        }
+    );
     return (
         <div className="middlepane">
             <div className="middlepaneHeader">
@@ -45,85 +111,13 @@ export default function Middlepane() {
                         <span className="userStatus">Online</span>
                     </div>
                 </div>
-                <button className='settingsBtn' >
+                <button className="settingsBtn">
                     <IonIcon icon={settingsOutline} className="settingsIcon" />
                 </button>
             </div>
             <div className="middlepaneBody">
-                <div className="senderMessage">
-                    <img
-                        src={process.env.PUBLIC_URL + "/images/demoImg.jpeg"}
-                        alt="avatar"
-                    />
-                    <div className="innerText">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry. Lorem Ipsum has been the
-                        industry's standard dummy text ever since the 1500s.
-                    </div>
-                </div>
-                <div className="receiverMessage">
-                    <div className="innerText">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry.
-                    </div>
-                    <img
-                        src={process.env.PUBLIC_URL + "/images/avatar.jpg"}
-                        alt="avatar"
-                    />
-                </div>
-                <div className="senderMessage">
-                    <img
-                        src={process.env.PUBLIC_URL + "/images/demoImg.jpeg"}
-                        alt="avatar"
-                    />
-                    <div className="innerText">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry. Lorem Ipsum has been the
-                        industry's standard dummy text ever since the 1500s.
-                    </div>
-                </div>
-                <div className="senderMessage">
-                    <img
-                        src={process.env.PUBLIC_URL + "/images/demoImg.jpeg"}
-                        alt="avatar"
-                    />
-                    <div className="innerText">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry. Lorem Ipsum has been the
-                        industry's standard dummy text ever since the 1500s.
-                    </div>
-                </div>
-                <div className="receiverMessage">
-                    <div className="innerText">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry.
-                    </div>
-                    <img
-                        src={process.env.PUBLIC_URL + "/images/avatar.jpg"}
-                        alt="avatar"
-                    />
-                </div>
-                <div className="receiverMessage">
-                    <div className="innerText">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry.
-                    </div>
-                    <img
-                        src={process.env.PUBLIC_URL + "/images/avatar.jpg"}
-                        alt="avatar"
-                    />
-                </div>
-                <div className="senderMessage">
-                    <img
-                        src={process.env.PUBLIC_URL + "/images/demoImg.jpeg"}
-                        alt="avatar"
-                    />
-                    <div className="innerText">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry. Lorem Ipsum has been the
-                        industry's standard dummy text ever since the 1500s.
-                    </div>
-                </div>
+                {divs ? divs : ""}
+                <div ref={messagesEndRef} />
             </div>
             <div className="middlepaneFooter">
                 <input
@@ -135,16 +129,12 @@ export default function Middlepane() {
                     onChange={handleChange}
                     ref={ref}
                     onClick={() => setShowEmojis(false)}
-                    onKeyDown ={e => {
-                        if (e.key !== 'Enter') return;
+                    onKeyDown={(e) => {
+                        if (e.key !== "Enter") return;
                         handleSend();
-                    }
-                    }
+                    }}
                 />
-                <button
-                    className="emoBtn"
-                    onClick={handleShow}
-                >
+                <button className="emoBtn" onClick={handleShow}>
                     <IonIcon className="emoIcon" icon={happyOutline} />
                 </button>
                 <button className="emoBtn" onClick={handleSend}>
@@ -152,7 +142,10 @@ export default function Middlepane() {
                 </button>
                 {showEmojis && (
                     <div className="emoPanel">
-                        <EmojiPicker className="emoPanel" onEmojiClick={onEmojiClick} />
+                        <EmojiPicker
+                            className="emoPanel"
+                            onEmojiClick={onEmojiClick}
+                        />
                     </div>
                 )}
             </div>

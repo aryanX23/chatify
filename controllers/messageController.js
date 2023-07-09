@@ -23,7 +23,7 @@ async function setMessage(req, res) {
     }
     catch (e) {
         console.log("Error occured in setMessage route!", e);
-    }
+    } 
 }
 
 module.exports = {

@@ -19,12 +19,12 @@ export default function Leftpane() {
                 setUserConversation((prev) => data);
             }
         );
-    }, [userDetails.userId]);
+    }, [userConversations]);
 
     const divs = userConversations.map(
         ({ conversationId, user: { email, fullName } }) => {
             return (
-                <div className="messages" key={conversationId}>
+                <div className="messages" key={conversationId} onClick={()=>{localStorage.setItem("conversationId",conversationId)}}>
                     <img
                         src={process.env.PUBLIC_URL + "/images/demoImg.jpeg"}
                         alt="img"
