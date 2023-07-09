@@ -5,6 +5,7 @@ const Messages = require('../models/messageModel');
 async function createConversation(req, res) {
     try {
         const { senderId, receiverId } = req.body;
+        const checkExists = await Users.findById(receiverId);
         const isPresent = await Conversations.find();
         if (isPresent.length !== 0) {
             for (let i = 0; i < isPresent.length; i++) {
@@ -22,7 +23,9 @@ async function createConversation(req, res) {
         res.status(200).send("New Conversation created successfully!");
     }
     catch (e) {
-        console.log("An Error has occured in the createConversation route!",e);
+        console.log("An Error has occured in the createConversation route!", e);
+        res.status(200).send("Id does not exists!!");
+        return;
     }
 }
 

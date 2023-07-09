@@ -42,7 +42,7 @@
     margin-top: 5px;
 }
 .userId span{
-    color: #000000;
+    color: var(--color-white);
 }
 .leftpaneBody{
     width: 100%;
@@ -57,7 +57,24 @@
     align-items: center;
     justify-content: space-between ;
 }
-.leftpaneBodyTitle span{
+.addUserBody{
+    width: 100%;
+    border-bottom: 0.1px solid #edeced;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-bottom: 30px;
+}
+.addUserBody span{
+    color: #195bfd;
+    font-size: 1.8em;
+    font-weight: 600;
+    margin-left: 40px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.leftpaneBodyTitle span {
     color: #195bfd;
     font-size: 1.8em;
     font-weight: 600;
@@ -66,7 +83,18 @@
 .icon{
     width: 30px !important;
     height: 30px !important;
-    margin-right: 30px;
+}
+.addIcon {
+    position: relative;
+    background: transparent;
+    border: none;
+    border-radius: 50px;
+    transition: 0.1s;
+    margin-left: 80px;
+    outline: none;
+}
+.addIcon:active {
+    scale: 0.9;
 }
 .searchBar{
     position: relative;
@@ -134,4 +162,16 @@
 .chatMessage {
     font-size: 0.9em;
     font-weight: 300;
+}
+.sendIconBtn{
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    border: none;
+    outline:none;
+    background-color: transparent;
+    border-radius: 500px;
+}
+.sendIconBtn:active{
+    scale:0.95;
 }

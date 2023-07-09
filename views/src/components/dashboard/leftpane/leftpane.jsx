@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "./leftpane.css";
 import { IonIcon } from "@ionic/react";
-import { add, searchSharp } from "ionicons/icons";
+import { addSharp, sendSharp, searchSharp } from "ionicons/icons";
 import { Axios, URL } from "../../../api/axios";
 export default function Leftpane() {
-    const [userDetails, setUserDetails] = useState({
+    const [userDetails] = useState({
         userId: localStorage.getItem("userId"),
         email: localStorage.getItem("email"),
         fullName: localStorage.getItem("fullName"),
     });
+    const [visibility, setVisibility] = useState(false);
     const [userConversations, setUserConversation] = useState([]);
+    const [receiverId, setReceiverId] = useState("");
     useEffect(() => {
         Axios.get(URL + "/api/conversation/" + userDetails.userId).then(
             (response) => {
@@ -35,6 +37,20 @@ export default function Leftpane() {
             );
         }
     );
+    function handleAddUser() {
+        const bodyFormData = {
+            senderId: userDetails.userId,
+            receiverId: receiverId
+        }
+        Axios({
+            method: "post",
+            url: URL + "/api/conversation/",
+            withCredentials: true,
+            data: bodyFormData,
+        }).then(response => console.log(response));
+        setReceiverId(prev => "");
+        setVisibility(prev => false);
+    }
 
     return (
         <div className="leftpane">
@@ -49,11 +65,16 @@ export default function Leftpane() {
                         <span>{userDetails.userId}</span>
                     </div>
                 </div>
+                <button
+                    className="addIcon"
+                    onClick={() => setVisibility((prev) => !prev)}
+                >
+                    <IonIcon className="icon" icon={addSharp} />
+                </button>
             </div>
             <div className="leftpaneBody">
                 <div className="leftpaneBodyTitle">
                     <span>Messages</span>
-                    <IonIcon className="icon" icon={add} />
                 </div>
                 <div className="searchBar">
                     <input
@@ -64,7 +85,29 @@ export default function Leftpane() {
                     />
                     <IonIcon icon={searchSharp} className="searchicon" />
                 </div>
+
                 <div className="messageList">
+                    {visibility && (
+                        <div className="addUserBody">
+                            <span>Add User</span>
+                            <div className="searchBar">
+                                <input
+                                    type="text"
+                                    name="search"
+                                    className="search"
+                                    placeholder="Add User"
+                                    onChange={(e) => setReceiverId(prev => e.target.value)}
+                                    value={receiverId}
+                                />
+                                <button className="sendIconBtn" onClick={handleAddUser} >
+                                <IonIcon
+                                    icon={sendSharp}
+                                    className="sendIcon"
+                                    />
+                                </button>
+                            </div>
+                        </div>
+                    )}
                     {divs ? divs : ""}
                 </div>
             </div>
