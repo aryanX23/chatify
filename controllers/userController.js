@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const Users = require('../models/userModel');
 const jwt = require('jsonwebtoken');
-require("dotenv");
+require("dotenv").config();
 
 async function registerUsers(req, res, next){
     const { fullName, email, password } = req.body;
@@ -49,7 +49,7 @@ async function loginUsers(req,res){
                         $set: { token }
                 });
                 await user.save();
-                res.status(200).cookie([`JWT_TOKEN=${token}; secure; httponly;samesite=none;`,])
+                res.status(200).cookie([`JWT_TOKEN=${token}; secure; httponly;samesite=strict;`,])
                     .json({ response: "User Logged In Successfully!", user: user, authenticated: true });
             }
         }

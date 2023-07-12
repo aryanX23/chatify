@@ -1,5 +1,5 @@
 const express = require('express');
-require("dotenv");
+require("dotenv").config();
 const userRouter = require('./routes/userRoutes');
 const conversationRouter = require('./routes/conversationRoutes');
 const messageRouter = require('./routes/messageRoutes');
@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(
     cors({
-        origin: process.env.ORIGIN_URL + ":" + process.env.PORT,
+        origin: process.env.ORIGIN_URL,
         credentials: true,
     })
 );
@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
     res.send("Server Online!!"); 
 });
 
-connectMongoDB().then(result=>{
+connectMongoDB(process.env.MONGO_URI || "").then(result=>{
     const server = app.listen(port,()=>{
         console.log("Server is successfully running on port "+port+" !!");
     });

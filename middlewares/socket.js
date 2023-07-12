@@ -1,11 +1,11 @@
-require("dotenv");
+require("dotenv").config();
 
 let io;
 module.exports = {
     init: (httpServer) => {
         io = require("socket.io")(httpServer, {
             cors: {
-                origin: process.env.ORIGIN_URL+":"+process.env.PORT,
+                origin: process.env.ORIGIN_URL,
             },
         });
         return io;
