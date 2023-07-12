@@ -37,7 +37,7 @@ async function getConversationById(req, res) {
             conversations.map(async (conversation) => {
                 const receiverId = conversation.members.find((member) => member !== userId);
                 const user = await Users.findById(receiverId);
-                return { user: { email: user.email, fullName: user.fullName }, conversationId: conversation._id };
+                return { user: { email: user.email, fullName: user.fullName }, conversationId: conversation._id, receiverid:receiverId };
             })
         ); 
         res.status(200).json(await conversationUserData);
