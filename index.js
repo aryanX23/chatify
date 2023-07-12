@@ -1,4 +1,5 @@
 const express = require('express');
+require("dotenv");
 const userRouter = require('./routes/userRoutes');
 const conversationRouter = require('./routes/conversationRoutes');
 const messageRouter = require('./routes/messageRoutes');
@@ -11,10 +12,12 @@ const io = require('./middlewares/socket');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({
-    origin: '*',
-    credentials: true
-}));
+app.use(
+    cors({
+        origin: process.env.ORIGIN_URL + ":" + process.env.PORT,
+        credentials: true,
+    })
+);
 
 
 app.use('/api/users', userRouter);
@@ -24,7 +27,7 @@ app.get('/', (req, res) => {
     res.send("Server Online!!"); 
 });
 
-connectMongoDB('mongodb://0.0.0.0:27017').then(result=>{
+connectMongoDB().then(result=>{
     const server = app.listen(port,()=>{
         console.log("Server is successfully running on port "+port+" !!");
     });
@@ -43,14 +46,11 @@ connectMongoDB('mongodb://0.0.0.0:27017').then(result=>{
         socket.on(
             "sendMessage",
             async ({ senderId, receiverId, message, conversationId }) => {
-
-                console.log(message);
                 const receiver = users.find(
                     (user) => user.userId === receiverId
                 );
                 const sender = users.find((user) => user.userId === senderId);
                 const user = await Users.findById(senderId);
-                console.log("sender :>> ", sender, receiver);
                 if (receiver) {
                     io.to(receiver.socketId)
                         .to(sender.socketId)
