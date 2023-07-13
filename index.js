@@ -5,7 +5,7 @@ const conversationRouter = require('./routes/conversationRoutes');
 const messageRouter = require('./routes/messageRoutes');
 const { connectMongoDB } = require('./middlewares/mongoose');
 const Users = require('./models/userModel');
-var cors = require('cors')
+var cors = require('cors');
 const app = express();
 const port = process.env.PORT || 8000;
 const io = require('./middlewares/socket');
@@ -18,13 +18,6 @@ app.use(
         origin: process.env.ORIGIN_URL,
     })
 );
-const allowCrossDomain = (req, res, next) => {
-    res.header(`Access-Control-Allow-Origin`, `aryan-rai.me/chatify-frontend/`);
-    res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE`);
-    res.header(`Access-Control-Allow-Headers`, `Content-Type`);
-    next();
-};
-app.use(allowCrossDomain);
 
 
 app.use('/api/users', userRouter);
