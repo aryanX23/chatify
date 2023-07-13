@@ -6,7 +6,7 @@ module.exports = {
         io = require("socket.io")(httpServer, {
             cors: {
                 credentials: true,
-                origin: true
+                origin: "http://localhost:3000"
             },
         });
         return io;
