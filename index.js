@@ -11,6 +11,7 @@ const port = process.env.PORT || 8000;
 const io = require('./middlewares/socket');
 
 app.use(express.json());
+app.use(express.static('views'));
 app.use(express.urlencoded({ extended: false }));
 app.use(
     cors({
