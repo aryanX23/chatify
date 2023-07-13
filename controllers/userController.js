@@ -49,7 +49,7 @@ async function loginUsers(req,res){
                         $set: { token }
                 });
                 await user.save();
-                res.status(200).cookie([`JWT_TOKEN=${token}; secure; httponly;samesite=strict;`,])
+                res.status(200).cookie([`JWT_TOKEN=${token}; secure; httponly;samesite=none;`,])
                     .json({ response: "User Logged In Successfully!", user: user, authenticated: true });
             }
         }
