@@ -1,5 +1,4 @@
 require("dotenv").config();
-var cors = require("cors");
 
 let io;
 module.exports = {
