@@ -8,7 +8,6 @@ const Users = require('./models/userModel');
 var cors = require('cors');
 const app = express();
 const port = process.env.PORT || 8000;
-const io = require('./middlewares/socket');
 
 app.use(express.json());
 app.use(express.static('views'));
@@ -67,7 +66,7 @@ connectMongoDB(process.env.MONGO_URI || "").then(result=>{
                             },
                         });
                 } else {
-                    io.to(sender.socketId).emit("getMessage", {
+                    io.to(sender?.socketId).emit("getMessage", {
                         senderId,
                         message,
                         conversationId,
@@ -81,7 +80,7 @@ connectMongoDB(process.env.MONGO_URI || "").then(result=>{
                 }
             }
         );
-        socket.on("disconnect", () => {
+        socket.on("disconnec", () => {
             users = users.filter((user) => user.socketId !== socket.id);
             io.emit("getUsers", users);
         });

@@ -4,6 +4,7 @@ async function getMessage(req, res) {
     try {
         const conversationId = req.params.id;
         const messages = await Messages.findOne({ conversationId });
+        //console.log("hit");
         res.send(messages);
     }
     catch (e) {
