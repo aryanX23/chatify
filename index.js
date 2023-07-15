@@ -80,7 +80,7 @@ connectMongoDB(process.env.MONGO_URI || "").then(result=>{
                 }
             }
         );
-        socket.on("disconnec", () => {
+        socket.on("disconnect", () => {
             users = users.filter((user) => user.socketId !== socket.id);
             io.emit("getUsers", users);
         });
